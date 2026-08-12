@@ -24,3 +24,5 @@
 
 
 - Clarify in `GET_UPDATE_STOCK_SCHEMA` that the tool modifies inventory data and should only be called for explicit stock-change requests.
+
+- Improve tool result schemas so the model has enough information to produce grounded final answers. For example, `update_stock` currently returns only `quantity_change`, which can cause the model to infer an incorrect current quantity. Return `previous_quantity` and `new_quantity` once real database-backed tools are implemented.

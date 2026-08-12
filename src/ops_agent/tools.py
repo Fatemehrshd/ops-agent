@@ -44,7 +44,6 @@ GET_LOW_STOCK_SCHEMA = {
     },
 }
 
-
 GET_SALES_SUMMARY_SCHEMA = {
     "type": "function",
     "function": {
@@ -55,10 +54,7 @@ GET_SALES_SUMMARY_SCHEMA = {
             "units sold, best-selling products, sales performance, or "
             "sales trends."
         ),
-        "parameters": {
-            "type": "object",
-            "properties": SalesSummaryParams.model_json_schema(),
-        },
+        "parameters": SalesSummaryParams.model_json_schema(),
     },
 }
 
@@ -90,8 +86,6 @@ UPDATE_STOCK_SCHEMA = {
             "Use this tool only when the user explicitly asks to increase "
             "or decrease the stock of a specific product. "
             "The item argument must contain only the product name. "
-            "Do not include the quantity, numbers, commands, or surrounding "
-            "words in the item argument. "
             "The quantity argument must contain only the number of units "
             "to add or remove. Use a positive value when increasing stock "
             "and a negative value when decreasing stock."
@@ -102,21 +96,17 @@ UPDATE_STOCK_SCHEMA = {
                 "item": {
                     "type": "string",
                     "description": (
-                        "The product name only. Extract only the product "
-                        "name from the user's message. Do not include "
-                        "quantity, numbers, commands, or surrounding words. "
-                        "Preserve the original language, spelling, and "
-                        "wording of the product name. Do not translate "
-                        "or rewrite it."
+                        "The product name only. Do not include quantity, "
+                        "numbers, commands, or surrounding words. "
+                        "Preserve the original language and wording."
                     ),
                 },
                 "quantity": {
                     "type": "integer",
                     "description": (
-                        "The number of units to change in inventory. "
-                        "Use a positive number when the user asks to "
-                        "increase stock and a negative number when the "
-                        "user asks to decrease stock."
+                        "Number of units to add or remove. "
+                        "Use a positive value when increasing stock "
+                        "and a negative value when decreasing stock."
                     ),
                 },
             },
@@ -159,7 +149,7 @@ def get_sales_summary(period: str | None = None) -> dict:
 
 def get_discount_query() -> list[dict]:
     return [
-        {"name": "هدفون بی سیم", "dicount_percent": 20},
+        {"name": "هدفون بی سیم", "discount_percent": 20},
         {"name": "کیبورد مکانیکی", "discount_percent": 15},
     ]
 

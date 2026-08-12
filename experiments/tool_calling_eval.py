@@ -3,7 +3,7 @@ from src.ops_agent.tools import (
     GET_LOW_STOCK_SCHEMA,
     GET_SALES_SUMMARY_SCHEMA,
     GET_DISCOUNT_QUERY_SCHEMA,
-    GET_UPDATE_STOCK_SCHEMA,
+    UPDATE_STOCK_SCHEMA,
 )
 from src.ops_agent.prompts import tool_calling_prompt
 import json
@@ -13,7 +13,7 @@ TOOLS = [
     GET_LOW_STOCK_SCHEMA,
     GET_SALES_SUMMARY_SCHEMA,
     GET_DISCOUNT_QUERY_SCHEMA,
-    GET_UPDATE_STOCK_SCHEMA,
+    UPDATE_STOCK_SCHEMA,
 ]
 
 
