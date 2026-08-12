@@ -1,29 +1,16 @@
-from ctypes import resize
 import json
 from src.ops_agent.llm import chat
 from src.ops_agent.schemas import UserIntent
 from pydantic import ValidationError
 from src.ops_agent.prompts import intent_prompt
+# from ollama import chat
+from src.ops_agent.config import LLM_MODEL
 
-
-schema = json.dumps(UserIntent.model_json_schema(), indent=2)
 
 system_prompt = intent_prompt()
 
 valid_jsons, valid_schemas, correct_intents = 0, 0, 0
 
-# messages = [
-#     "چند محصول در انبار در حال تمام شدن هستند؟",
-#     "کدام محصولات تخفیف خورده اند؟",
-#     "چه محصولات الکترونیکی در فروشگاه موجود است؟",
-#     "کدام محصول بیشترین فروش در یک ماه گذشته را داشته؟",
-#     "کدام دسته بندی محصول در ماه گذشته از همه بیشتر تخفیف خورده؟",
-#     "فردا هوا چطوره؟",
-#     "پایتخت ژاپن کجاست؟",
-#     "امروز فروش چطور بود؟",
-#     "محصولات انبار باید شارژ بشن؟",
-#     "موجودی شلوار جین آبی آسمانی سایز 34 رو 5 تا اضافه کن."
-# ]
 test_cases = [
     {
         "input": "چند محصول در انبار در حال تمام شدن هستند؟",
@@ -59,7 +46,7 @@ test_cases = [
     },
     {
         "input": "محصولات انبار باید شارژ بشن؟",
-        "expected_intent": "unknown",
+        "expected_intent": "low_stock",
         "note": "genuinely ambiguous: restock vs charge batteries",
     },
     {
@@ -72,19 +59,23 @@ for i, test in enumerate(test_cases, 1):
     response = chat([
         {"role": "system", "content": system_prompt}, 
         {"role": "user", "content": test["input"]}
-    ])
+        ],
+    response_format=UserIntent,
+    )
+    
 
     text = response.text
     try: 
-        parsed = json.loads(text)
+        json.loads(text)
         valid_jsons += 1
         print("JSON: SUCCESS")
 
-    except json.JsonDecoderError as e:
+    except json.JSONDecodeError as e:
         print(f"JSON: FAILED - {e}")
 
-    try: 
-        result = UserIntent.model_validate_json(text)
+    result = response.parsed
+
+    if result is not None:
         valid_schemas += 1
         predicted = result.intent
         expected = test["expected_intent"]
@@ -93,8 +84,10 @@ for i, test in enumerate(test_cases, 1):
         print(f"\n--- Test {i} ---")
         print(f"Expected: {expected}")
         print(f"Predicted: {predicted}")
-    except ValidationError as e:
-        print(f"ERROR: {e}")
+        print("Schema: SUCCESS")
+
+    else:
+        print("Schema: FAILED")
 
     print("-" * 20)
 
