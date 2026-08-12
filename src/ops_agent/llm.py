@@ -8,8 +8,6 @@ import logging
 import time
 from pydantic import BaseModel
 
-from test import response
-
 from . import config
 
 _client = OpenAI(base_url=config.LLM_BASE_URL, api_key=config.LLM_API_KEY)
