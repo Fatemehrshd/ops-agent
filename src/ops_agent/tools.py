@@ -81,7 +81,7 @@ GET_DISCOUNT_QUERY_SCHEMA = {
     },
 }
 
-GET_UPDATE_STOCK_SCHEMA = {
+UPDATE_STOCK_SCHEMA = {
     "type": "function",
     "function": {
         "name": "update_stock",
