@@ -21,3 +21,6 @@
 - Expand the 16-case tool-calling evaluation into a proper evaluation harness.
 - Add more ambiguous and adversarial tool-selection cases.
 - Measure tool-calling latency and token usage across local and hosted models.
+
+
+- Clarify in `GET_UPDATE_STOCK_SCHEMA` that the tool modifies inventory data and should only be called for explicit stock-change requests.
