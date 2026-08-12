@@ -5,6 +5,7 @@ from typing import Literal
 class UserIntent(BaseModel):
     intent: Literal[
         "low_stock",
+        "discount_query",
         "sales_summary",
         "update_stock",
         "unknown"
@@ -17,4 +18,3 @@ class UserIntent(BaseModel):
 
 class SalesSummaryParams(BaseModel):
     period: str = Literal["today", "last_7_days", "last_30_days"]
-    
