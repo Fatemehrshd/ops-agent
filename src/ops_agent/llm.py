@@ -1,7 +1,4 @@
 from dataclasses import dataclass, field
-from random import choices
-from sys import prefix
-from tracemalloc import start
 from typing import Any
 import hashlib
 import json
@@ -9,6 +6,9 @@ from pathlib import Path
 from openai import OpenAI
 import logging
 import time
+from pydantic import BaseModel
+
+from test import response
 
 from . import config
 
@@ -25,7 +25,8 @@ class LLMResponse:
     model: str
     wall_time_s: float = 0.0
     cached: bool = False
-    tool_calls: list[dict[str, Any]] = field(default_factory=list)
+    tool_calls: list[dict[str, Any]] = field(default_factory=list),
+    parsed: Any | None = None
 
     @property
     def total_tokens(self) -> int:
@@ -66,6 +67,7 @@ def chat(
     temperature: float = 0.0,
     max_tokens: int = 800,
     model: str | None = None,
+    response_format: type[BaseModel] | None = None,
 ) -> LLMResponse:
 
     started_at = time.perf_counter()
@@ -80,11 +82,26 @@ def chat(
     if tools:
         payload["tools"] = tools
     
+    if response_format is not None:
+        payload["response_format"] = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": response_format.__name__,
+                "schema": response_format.model_json_schema()
+            },
+        }
+
     key = _cache_key(payload)
     hit = _cache_read(key)
 
     if hit is not None:
         wall_time = round(time.perf_counter() - started_at, 4)
+
+        parsed = None
+
+        if response_format is not None:
+            parsed = response_format.model_validate_json(hit["text"])
+
         logger.info(json.dumps(
             {"event": "llm_call",
             "cached": True,
@@ -92,15 +109,27 @@ def chat(
             "wall_time_s": wall_time,
         }))
 
-        return LLMResponse(**hit, cached=True, wall_time_s=wall_time)
+        return LLMResponse(
+            **hit, 
+            cached=True, 
+            wall_time_s=wall_time, 
+            parsed=parsed
+        )
 
     call_started_at = time.perf_counter()
     raw = _client.chat.completions.create(**payload)
     latency = time.perf_counter() - call_started_at
 
     choice = raw.choices[0].message
+    text = choice.content or ""
+
+    parsed = None
+
+    if response_format is not None:
+        parsed = response_format.model_validate_json(text)
+
     data = {
-        "text": choice.content or "",
+        "text": text,
         "prompt_tokens": raw.usage.prompt_tokens,
         "completion_tokens": raw.usage.completion_tokens,
         "latency_s": round(latency, 2),
@@ -121,4 +150,8 @@ def chat(
         "wall_time_s": wall_time,
         "tok_per_s": round(data["completion_tokens"] / latency ,1) if latency else 0,
     }))
-    return LLMResponse(**data, wall_time_s=wall_time)
+    return LLMResponse(
+        **data, 
+        wall_time_s=wall_time, 
+        parsed=parsed
+    )
