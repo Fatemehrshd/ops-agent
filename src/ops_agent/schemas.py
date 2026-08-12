@@ -17,4 +17,4 @@ class UserIntent(BaseModel):
     confidence: float = Field(ge=0, le=1)
 
 class SalesSummaryParams(BaseModel):
-    period: str = Literal["today", "last_7_days", "last_30_days"]
+    period: Literal["today", "last_7_days", "last_30_days"]

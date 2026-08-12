@@ -125,3 +125,47 @@ UPDATE_STOCK_SCHEMA = {
         },
     },
 }
+
+
+def get_low_stock(
+    threshold: int | None = None, 
+    limit: int | None = None
+) -> list[dict]:
+
+    products = [
+        {"name": "شلوار جین آبی", "quantity": 3},
+        {"name": "لپ‌تاپ مدل X", "quantity": 7},
+        {"name": "هدفون بی‌سیم", "quantity": 2},
+    ]
+
+    result = [
+        product
+        for product in products
+        if product["quantity"] <= threshold
+    ]
+
+    if limit is not None:
+        return result[:limit]
+    
+    return result
+
+
+def get_sales_summary(period: str | None = None) -> dict:
+    return {
+        "period": period,
+        "total_sales": 1250000,
+        "total_count": 45,
+    }
+
+def get_discount_query() -> list[dict]:
+    return [
+        {"name": "هدفون بی سیم", "dicount_percent": 20},
+        {"name": "کیبورد مکانیکی", "discount_percent": 15},
+    ]
+
+def update_stock(item: str, quantity: int) -> dict:
+    return {
+        "item": item,
+        "quantity_change": quantity,
+        "status": "updated",
+    }
