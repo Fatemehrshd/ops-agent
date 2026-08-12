@@ -1,3 +1,5 @@
+from src.ops_agent.schemas import SalesSummaryParams
+
 GET_LOW_STOCK_SCHEMA = {
     "type": "function",
     "function": {
@@ -55,9 +57,7 @@ GET_SALES_SUMMARY_SCHEMA = {
         ),
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": [],
-            "additionalProperties": False,
+            "properties": SalesSummaryParams.model_json_schema(),
         },
     },
 }
