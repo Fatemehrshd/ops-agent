@@ -58,10 +58,10 @@ GET_SALES_SUMMARY_SCHEMA = {
     },
 }
 
-GET_DISCOUNT_QUERY_SCHEMA = {
+GET_DISCOUNT_PRODUCTS_SCHEMA = {
     "type": "function",
     "function": {
-        "name": "get_discount_query",
+        "name": "get_discount_products",
         "description": (
             "Returns products that currently have discounts or promotions. "
             "Use this tool when the user asks which products are discounted, "
@@ -147,7 +147,7 @@ def get_sales_summary(period: str | None = None) -> dict:
         "total_count": 45,
     }
 
-def get_discount_query() -> list[dict]:
+def get_discount_products() -> list[dict]:
     return [
         {"name": "هدفون بی سیم", "discount_percent": 20},
         {"name": "کیبورد مکانیکی", "discount_percent": 15},
