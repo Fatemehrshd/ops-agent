@@ -34,3 +34,5 @@
 - Fully correct tool calls reached 14/16 (88%).
 - Remaining failures are argument-extraction issues; deferred further model
   tuning until the execution loop and stronger models are evaluated.
+
+- The agent loop passes inputs to the model and check if tools should be called. Then, it executes these tools and return the final answer.
