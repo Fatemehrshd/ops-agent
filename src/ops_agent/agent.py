@@ -19,14 +19,14 @@ TOOLS = [
 
 
 
-def run_agent(user_message: str) -> LLMResponse:
+def run_agent(user_message: str, limit: int = 5) -> LLMResponse:
 
     messages= [
         {"role": "system", "content": tool_calling_prompt()},
         {"role": "user", "content": user_message},
     ]
 
-    while True:
+    for _ in range(limit):
         response = chat(
             messages=messages,
             tools=TOOLS,
@@ -52,5 +52,9 @@ def run_agent(user_message: str) -> LLMResponse:
                 "tool_call_id": tool_call["id"],
                 "content": json.dumps(
                     result, 
-                    ensure_ascii=False)
+                    ensure_ascii=False),
             })
+        
+    raise RuntimeError(
+        f"Agent exceeded the maximum of {limit} tool-calling iterations."
+    )
